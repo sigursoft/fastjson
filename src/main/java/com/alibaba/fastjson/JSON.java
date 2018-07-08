@@ -41,7 +41,6 @@ import com.alibaba.fastjson.parser.deserializer.ParseProcess;
 import com.alibaba.fastjson.serializer.*;
 import com.alibaba.fastjson.util.IOUtils;
 import com.alibaba.fastjson.util.TypeUtils;
-import sun.reflect.annotation.AnnotationType;
 
 /**
  * This is the main class for using Fastjson. You usually call these two methods {@link #toJSONString(Object)} and {@link #parseObject(String, Class)}.
