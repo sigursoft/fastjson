@@ -21,7 +21,7 @@ public class ServiceLoader {
         if (classLoader == null) {
             return Collections.emptySet();
         }
-        
+
         Set<T> services = new HashSet<T>();
 
         String className = clazz.getName();
@@ -46,7 +46,7 @@ public class ServiceLoader {
         for (String serviceName : serviceNames) {
             try {
                 Class<?> serviceClass = classLoader.loadClass(serviceName);
-                T service = (T) serviceClass.newInstance();
+                T service = (T) serviceClass.getDeclaredConstructor().newInstance();
                 services.add(service);
             } catch (Exception e) {
                 // skip

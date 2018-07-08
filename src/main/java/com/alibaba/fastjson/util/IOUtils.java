@@ -36,17 +36,17 @@ import com.alibaba.fastjson.JSONException;
  * @author wenshao[szujobs@hotmail.com]
  */
 public class IOUtils {
-    
+
     public  final  static String FASTJSON_PROPERTIES  ="fastjson.properties";
-    
+
     public final static String FASTJSON_COMPATIBLEWITHJAVABEAN="fastjson.compatibleWithJavaBean";
-    
+
     public final static String FASTJSON_COMPATIBLEWITHFIELDNAME="fastjson.compatibleWithFieldName";
-    
-    public final static Properties DEFAULT_PROPERTIES =new Properties();    
+
+    public final static Properties DEFAULT_PROPERTIES =new Properties();
 
     public final static Charset   UTF8                 = Charset.forName("UTF-8");
-    
+
     public final static char[]    DIGITS                     = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
             'B', 'C', 'D', 'E', 'F'                         };
 
@@ -78,7 +78,7 @@ public class IOUtils {
             }
         }
     }
-    
+
     static {
         try {
             loadPropertiesFromFile();
@@ -86,7 +86,7 @@ public class IOUtils {
             //skip
         }
     }
-    
+
     public static String getStringProperty(String name) {
         String prop = null;
         try {
@@ -96,7 +96,7 @@ public class IOUtils {
         }
         return (prop == null) ? DEFAULT_PROPERTIES.getProperty(name) : prop;
     }
-    
+
     public static void loadPropertiesFromFile(){
         InputStream imputStream = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
             public InputStream run() {
@@ -108,7 +108,7 @@ public class IOUtils {
                 }
             }
         });
-        
+
         if (null != imputStream) {
             try {
                 DEFAULT_PROPERTIES.load(imputStream);
@@ -169,7 +169,7 @@ public class IOUtils {
             specicalFlags_doubleQuotes[i] = 4;
             specicalFlags_singleQuotes[i] = 4;
         }
-        
+
         for (int i = 0; i < 161; ++i) {
             specicalFlags_doubleQuotesFlags[i] = specicalFlags_doubleQuotes[i] != 0;
             specicalFlags_singleQuotesFlags[i] = specicalFlags_singleQuotes[i] != 0;
@@ -383,11 +383,11 @@ public class IOUtils {
     public static boolean firstIdentifier(char ch) {
         return ch < IOUtils.firstIdentifierFlags.length && IOUtils.firstIdentifierFlags[ch];
     }
-    
+
     public static boolean isIdent(char ch) {
         return ch < identifierFlags.length && identifierFlags[ch];
     }
-    
+
     public static final char[] CA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
     public static final int[]  IA = new int[256];
     static {
@@ -404,7 +404,7 @@ public class IOUtils {
      * + Line separator must be "\r\n", as specified in RFC 2045 + The array must not contain illegal characters within
      * the encoded string<br>
      * + The array CAN have illegal characters at the beginning and end, those will be dealt with appropriately.<br>
-     * 
+     *
      * @param chars The source array. Length 0 will return an empty array. <code>null</code> will throw an exception.
      * @return The decoded array of bytes. May be of length 0.
      */
@@ -462,7 +462,7 @@ public class IOUtils {
 
         return bytes;
     }
-    
+
     public static byte[] decodeBase64(String chars, int offset, int charsLen) {
         // Check special case
         if (charsLen == 0) {
@@ -525,7 +525,7 @@ public class IOUtils {
      * + Line separator must be "\r\n", as specified in RFC 2045 + The array must not contain illegal characters within
      * the encoded string<br>
      * + The array CAN have illegal characters at the beginning and end, those will be dealt with appropriately.<br>
-     * 
+     *
      * @param s The source string. Length 0 will return an empty array. <code>null</code> will throw an exception.
      * @return The decoded array of bytes. May be of length 0.
      */
@@ -585,7 +585,7 @@ public class IOUtils {
 
         return dArr;
     }
-    
+
     public static int encodeUTF8(char[] chars, int offset, int len, byte[] bytes) {
         int sl = offset + len;
         int dp = 0;
@@ -628,7 +628,7 @@ public class IOUtils {
                         uc = c;
                     }
                 }
-                
+
                 if (uc < 0) {
                     bytes[dp++] = (byte) '?';
                 } else {
@@ -649,7 +649,7 @@ public class IOUtils {
     }
 
     /**
-     * @deprecated
+     * deprecated
      */
     public static int decodeUTF8(byte[] sa, int sp, int len, char[] da) {
         final int sl = sp + len;

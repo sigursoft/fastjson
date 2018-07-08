@@ -1152,7 +1152,7 @@ public final class JSONScanner extends JSONLexerBase {
             return list2;
         } else {
             try {
-                Collection<String> list = (Collection<String>) type.newInstance();
+                Collection<String> list = (Collection<String>) type.getDeclaredConstructor().newInstance();
                 return list;
             } catch (Exception e) {
                 throw new JSONException(e.getMessage(), e);

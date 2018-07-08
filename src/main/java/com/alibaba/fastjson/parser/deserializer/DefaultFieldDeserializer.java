@@ -38,7 +38,7 @@ public class DefaultFieldDeserializer extends FieldDeserializer {
             if (annotation != null && annotation.deserializeUsing() != Void.class) {
                 Class<?> deserializeUsing = annotation.deserializeUsing();
                 try {
-                    fieldValueDeserilizer = (ObjectDeserializer) deserializeUsing.newInstance();
+                    fieldValueDeserilizer = (ObjectDeserializer) deserializeUsing.getDeclaredConstructor().newInstance();
                 } catch (Exception ex) {
                     throw new JSONException("create deserializeUsing ObjectDeserializer error", ex);
                 }

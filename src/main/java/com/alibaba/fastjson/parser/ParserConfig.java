@@ -69,7 +69,7 @@ public class ParserConfig {
     public final static String DENY_PROPERTY             = "fastjson.parser.deny";
     public final static String AUTOTYPE_ACCEPT           = "fastjson.parser.autoTypeAccept";
     public final static String AUTOTYPE_SUPPORT_PROPERTY = "fastjson.parser.autoTypeSupport";
-    
+
     public static final String[] DENYS;
     private static final String[] AUTO_TYPE_ACCEPT_LIST;
     public static final boolean AUTO_SUPPORT;
@@ -104,7 +104,7 @@ public class ParserConfig {
     private boolean                                         asmEnable             = !ASMUtils.IS_ANDROID;
 
     public final SymbolTable                                symbolTable           = new SymbolTable(4096);
-    
+
     public PropertyNamingStrategy                           propertyNamingStrategy;
 
     protected ClassLoader                                   defaultClassLoader;
@@ -305,7 +305,7 @@ public class ParserConfig {
 
         deserializers.put(JSONPObject.class, new JSONPDeserializer());
     }
-    
+
     private static String[] splitItemsFormProperty(final String property ){
         if (property != null && property.length() > 0) {
             return property.split(",");
@@ -333,7 +333,7 @@ public class ParserConfig {
             }
         }
     }
-    
+
     private void addItemsToDeny(final String[] items){
         if (items == null){
             return;
@@ -443,32 +443,6 @@ public class ParserConfig {
         String className = clazz.getName();
         className = className.replace('$', '.');
 
-        if (className.startsWith("java.awt.") //
-            && AwtCodec.support(clazz)) {
-            if (!awtError) {
-                String[] names = new String[] {
-                        "java.awt.Point",
-                        "java.awt.Font",
-                        "java.awt.Rectangle",
-                        "java.awt.Color"
-                };
-
-                try {
-                    for (String name : names) {
-                        if (name.equals(className)) {
-                            deserializers.put(Class.forName(name), derializer = AwtCodec.instance);
-                            return derializer;
-                        }
-                    }
-                } catch (Throwable e) {
-                    // skip
-                    awtError = true;
-                }
-
-                derializer = AwtCodec.instance;
-            }
-        }
-
         if (!jdk8Error) {
             try {
                 if (className.startsWith("java.time.")) {
@@ -547,7 +521,7 @@ public class ParserConfig {
             if (jsonType != null) {
                 deserClass = jsonType.deserializer();
                 try {
-                    derializer = (ObjectDeserializer) deserClass.newInstance();
+                    derializer = (ObjectDeserializer) deserClass.getDeclaredConstructor().newInstance();
                     deserializers.put(clazz, derializer);
                     return derializer;
                 } catch (Throwable error) {
@@ -605,7 +579,7 @@ public class ParserConfig {
                 Class<?> deserializerClass = jsonType.deserializer();
                 if (deserializerClass != Void.class) {
                     try {
-                        Object deseralizer = deserializerClass.newInstance();
+                        Object deseralizer = deserializerClass.getDeclaredConstructor().newInstance();
                         if (deseralizer instanceof ObjectDeserializer) {
                             return (ObjectDeserializer) deseralizer;
                         }
@@ -613,7 +587,7 @@ public class ParserConfig {
                         // skip
                     }
                 }
-                
+
                 asmEnable = jsonType.asm();
             }
 
@@ -764,14 +738,14 @@ public class ParserConfig {
     }
 
     /**
-     * @deprecated  internal method, dont call
+     * deprecated internal method, dont call
      */
     public boolean isPrimitive(Class<?> clazz) {
         return isPrimitive2(clazz);
     }
 
     /**
-     * @deprecated  internal method, dont call
+     * deprecated  internal method, dont call
      */
     public static boolean isPrimitive2(Class<?> clazz) {
         return clazz.isPrimitive() //
@@ -793,10 +767,10 @@ public class ParserConfig {
                || clazz.isEnum() //
         ;
     }
-    
+
     /**
      * fieldName,field ，先生成fieldName的快照，减少之后的findField的轮询
-     * 
+     *
      * @param clazz
      * @param fieldCacheMap :map&lt;fieldName ,Field&gt;
      */
@@ -812,7 +786,7 @@ public class ParserConfig {
             parserAllFieldToCache(clazz.getSuperclass(), fieldCacheMap);
         }
     }
-    
+
     public static Field getFieldFromCache(String fieldName, Map<String, Field> fieldCacheMap) {
         Field field = fieldCacheMap.get(fieldName);
 

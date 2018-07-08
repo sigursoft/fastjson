@@ -19,7 +19,7 @@ public class PropertyProcessableDeserializer implements ObjectDeserializer {
     public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
         PropertyProcessable processable;
         try {
-            processable = this.type.newInstance();
+            processable = this.type.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new JSONException("craete instance error");
         }

@@ -20,7 +20,6 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.parser.deserializer.Jdk8DateCodec;
 import com.alibaba.fastjson.parser.deserializer.OptionalCodec;
-import com.alibaba.fastjson.support.springfox.SwaggerJsonSerializer;
 import com.alibaba.fastjson.util.*;
 import com.alibaba.fastjson.util.IdentityHashMap;
 import com.alibaba.fastjson.util.ServiceLoader;
@@ -44,7 +43,7 @@ import java.util.regex.Pattern;
 
 /**
  * circular references detect
- * 
+ *
  * @author wenshao[szujobs@hotmail.com]
  */
 public class SerializeConfig {
@@ -66,7 +65,7 @@ public class SerializeConfig {
     private final IdentityHashMap<Type, ObjectSerializer> serializers;
 
     private final boolean                                 fieldBased;
-    
+
 	public String getTypeKey() {
 		return typeKey;
 	}
@@ -74,10 +73,10 @@ public class SerializeConfig {
 	public void setTypeKey(String typeKey) {
 		this.typeKey = typeKey;
 	}
-	
+
     private final JavaBeanSerializer createASMSerializer(SerializeBeanInfo beanInfo) throws Exception {
         JavaBeanSerializer serializer = asmFactory.createJavaBeanSerializer(beanInfo);
-        
+
         for (int i = 0; i < serializer.sortedGetters.length; ++i) {
             FieldSerializer fieldDeser = serializer.sortedGetters[i];
             Class<?> fieldClass = fieldDeser.fieldInfo.fieldClass;
@@ -88,7 +87,7 @@ public class SerializeConfig {
                 }
             }
         }
-     
+
         return serializer;
     }
 
@@ -100,17 +99,17 @@ public class SerializeConfig {
 
 	    return createJavaBeanSerializer(beanInfo);
 	}
-	
+
 	public ObjectSerializer createJavaBeanSerializer(SerializeBeanInfo beanInfo) {
 	    JSONType jsonType = beanInfo.jsonType;
 
         boolean asm = this.asm && !fieldBased;
-	    
+
 	    if (jsonType != null) {
 	        Class<?> serializerClass = jsonType.serializer();
 	        if (serializerClass != Void.class) {
 	            try {
-                    Object seralizer = serializerClass.newInstance();
+                    Object seralizer = serializerClass.getDeclaredConstructor().newInstance();
                     if (seralizer instanceof ObjectSerializer) {
                         return (ObjectSerializer) seralizer;
                     }
@@ -118,7 +117,7 @@ public class SerializeConfig {
                     // skip
                 }
 	        }
-	        
+
 	        if (jsonType.asm() == false) {
 	            asm = false;
 	        }
@@ -162,7 +161,7 @@ public class SerializeConfig {
 		if (asm && beanInfo.beanType.isInterface()) {
 		    asm = false;
         }
-		
+
 		if (asm) {
     		for(FieldInfo fieldInfo : beanInfo.fields){
                 Field field = fieldInfo.field;
@@ -178,7 +177,7 @@ public class SerializeConfig {
                 }
 
     			JSONField annotation = fieldInfo.getAnnotation();
-    			
+
     			if (annotation == null) {
     			    continue;
     			}
@@ -219,7 +218,7 @@ public class SerializeConfig {
                 }
     		}
 		}
-		
+
 		if (asm) {
 			try {
                 ObjectSerializer asmSerializer = createASMSerializer(beanInfo);
@@ -275,7 +274,7 @@ public class SerializeConfig {
 	public SerializeConfig(int tableSize, boolean fieldBase) {
 	    this.fieldBased = fieldBase;
 	    serializers = new IdentityHashMap<Type, ObjectSerializer>(tableSize);
-		
+
 		try {
 		    if (asm) {
 		        asmFactory = new ASMSerializerFactory();
@@ -348,10 +347,10 @@ public class SerializeConfig {
 	 */
 	public void addFilter(Class<?> clazz, SerializeFilter filter) {
 	    ObjectSerializer serializer = getObjectWriter(clazz);
-	    
+
 	    if (serializer instanceof SerializeFilterable) {
 	        SerializeFilterable filterable = (SerializeFilterable) serializer;
-	        
+
 	        if (this != SerializeConfig.globalInstance) {
 	            if (filterable == MapSerializer.instance) {
 	                MapSerializer newMapSer = new MapSerializer();
@@ -360,28 +359,28 @@ public class SerializeConfig {
 	                return;
 	            }
 	        }
-	        
+
 	        filterable.addFilter(filter);
 	    }
 	}
-	
+
     /** class level serializer feature config
      * @since 1.2.12
      */
     public void config(Class<?> clazz, SerializerFeature feature, boolean value) {
         ObjectSerializer serializer = getObjectWriter(clazz, false);
-        
+
         if (serializer == null) {
             SerializeBeanInfo beanInfo = TypeUtils.buildBeanInfo(clazz, null, propertyNamingStrategy);
-            
+
             if (value) {
                 beanInfo.features |= feature.mask;
             } else {
                 beanInfo.features &= ~feature.mask;
             }
-            
+
             serializer = this.createJavaBeanSerializer(beanInfo);
-            
+
             put(clazz, serializer);
             return;
         }
@@ -389,18 +388,18 @@ public class SerializeConfig {
         if (serializer instanceof JavaBeanSerializer) {
             JavaBeanSerializer javaBeanSerializer = (JavaBeanSerializer) serializer;
             SerializeBeanInfo beanInfo = javaBeanSerializer.beanInfo;
-            
+
             int originalFeaturs = beanInfo.features;
             if (value) {
                 beanInfo.features |= feature.mask;
             } else {
                 beanInfo.features &= ~feature.mask;
             }
-            
+
             if (originalFeaturs == beanInfo.features) {
                 return;
             }
-            
+
             Class<?> serializerClass = serializer.getClass();
             if (serializerClass != JavaBeanSerializer.class) {
                 ObjectSerializer newSerializer = this.createJavaBeanSerializer(beanInfo);
@@ -408,11 +407,11 @@ public class SerializeConfig {
             }
         }
     }
-    
+
     public ObjectSerializer getObjectWriter(Class<?> clazz) {
         return getObjectWriter(clazz, true);
     }
-	
+
 	private ObjectSerializer getObjectWriter(Class<?> clazz, boolean create) {
         ObjectSerializer writer = serializers.get(clazz);
 
@@ -458,7 +457,7 @@ public class SerializeConfig {
                 writer = serializers.get(clazz);
             }
         }
-        
+
         if (writer == null) {
             String className = clazz.getName();
             Class<?> superClass;
@@ -517,31 +516,7 @@ public class SerializeConfig {
             } else if (Iterator.class.isAssignableFrom(clazz)) {
                 put(clazz, writer = MiscCodec.instance);
             } else {
-                if (className.startsWith("java.awt.") //
-                    && AwtCodec.support(clazz) //
-                ) {
-                    // awt
-                    if (!awtError) {
-                        try {
-                            String[] names = new String[]{
-                                    "java.awt.Color",
-                                    "java.awt.Font",
-                                    "java.awt.Point",
-                                    "java.awt.Rectangle"
-                            };
-                            for (String name : names) {
-                                if (name.equals(className)) {
-                                    put(Class.forName(name), writer = AwtCodec.instance);
-                                    return writer;
-                                }
-                            }
-                        } catch (Throwable e) {
-                            awtError = true;
-                            // skip
-                        }
-                    }
-                }
-                
+
                 // jdk8
                 if ((!jdk8Error) //
                     && (className.startsWith("java.time.") //
@@ -602,7 +577,7 @@ public class SerializeConfig {
                         jdk8Error = true;
                     }
                 }
-                
+
                 if ((!oracleJdbcError) //
                     && className.startsWith("oracle.sql.")) {
                     try {
@@ -620,40 +595,6 @@ public class SerializeConfig {
                     } catch (Throwable e) {
                         // skip
                         oracleJdbcError = true;
-                    }
-                }
-                
-                if ((!springfoxError) //
-                    && className.equals("springfox.documentation.spring.web.json.Json")) {
-                    try {
-                        put(Class.forName("springfox.documentation.spring.web.json.Json"), //
-                                writer = SwaggerJsonSerializer.instance);
-                        return writer;
-                    } catch (ClassNotFoundException e) {
-                        // skip
-                        springfoxError = true;
-                    }
-                }
-
-                if ((!guavaError) //
-                        && className.startsWith("com.google.common.collect.")) {
-                    try {
-                        String[] names = new String[] {
-                                "com.google.common.collect.HashMultimap",
-                                "com.google.common.collect.LinkedListMultimap",
-                                "com.google.common.collect.ArrayListMultimap",
-                                "com.google.common.collect.TreeMultimap"
-                        };
-
-                        for (String name : names) {
-                            if (name.equals(className)) {
-                                put(Class.forName(name), writer = GuavaCodec.instance);
-                                return writer;
-                            }
-                        }
-                    } catch (ClassNotFoundException e) {
-                        // skip
-                        guavaError = true;
                     }
                 }
 
@@ -717,7 +658,7 @@ public class SerializeConfig {
         }
         return writer;
     }
-	
+
 	public final ObjectSerializer get(Type key) {
 	    return this.serializers.get(key);
 	}

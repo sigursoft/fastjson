@@ -511,7 +511,7 @@ public class TypeUtils{
             if(ch == '+' || ch == '-'){
                 if(i != 0){
                     return false;
-                } 
+                }
             } else if(ch < '0' || ch > '9'){
                 return false;
             }
@@ -765,7 +765,7 @@ public class TypeUtils{
                 calendar = Calendar.getInstance(JSON.defaultTimeZone, JSON.defaultLocale);
             } else{
                 try{
-                    calendar = (Calendar) clazz.newInstance();
+                    calendar = (Calendar) clazz.getDeclaredConstructor().newInstance();
                 } catch(Exception e){
                     throw new JSONException("can not cast to : " + clazz.getName(), e);
                 }
@@ -1950,6 +1950,7 @@ public class TypeUtils{
         return new String(chars);
     }
 
+    @SuppressWarnings("deprecation")
     static void setAccessible(AccessibleObject obj){
         if(!setAccessibleEnable){
             return;
@@ -2077,7 +2078,7 @@ public class TypeUtils{
             list = EnumSet.noneOf((Class<Enum>) itemType);
         } else{
             try{
-                list = (Collection) rawClass.newInstance();
+                list = (Collection) rawClass.getDeclaredConstructor().newInstance();
             } catch(Exception e){
                 throw new JSONException("create instance error, class " + rawClass.getName());
             }

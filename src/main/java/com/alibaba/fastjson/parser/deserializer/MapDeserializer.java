@@ -18,14 +18,14 @@ import com.alibaba.fastjson.util.TypeUtils;
 
 public class MapDeserializer implements ObjectDeserializer {
     public static MapDeserializer instance = new MapDeserializer();
-    
-    
+
+
     @SuppressWarnings("unchecked")
     public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
         if (type == JSONObject.class && parser.getFieldTypeResolver() == null) {
             return (T) parser.parseObject();
         }
-        
+
         final JSONLexer lexer = parser.lexer;
         if (lexer.token() == JSONToken.NULL) {
             lexer.nextToken(JSONToken.COMMA);
@@ -64,7 +64,7 @@ public class MapDeserializer implements ObjectDeserializer {
             return parser.parseObject(map, fieldName);
         }
     }
-    
+
     @SuppressWarnings("rawtypes")
     public static Map parseMap(DefaultJSONParser parser, Map<String, Object> map, Type valueType, Object fieldName) {
         JSONLexer lexer = parser.lexer;
@@ -184,7 +184,7 @@ public class MapDeserializer implements ObjectDeserializer {
                 if (i != 0) {
                     parser.setContext(context);
                 }
-                
+
                 if (lexer.token() == JSONToken.NULL) {
                     value = null;
                     lexer.nextToken();
@@ -213,7 +213,7 @@ public class MapDeserializer implements ObjectDeserializer {
         }
 
     }
-    
+
     public static Object parseMap(DefaultJSONParser parser, Map<Object, Object> map, Type keyType, Type valueType,
                                   Object fieldName) {
         JSONLexer lexer = parser.lexer;
@@ -331,11 +331,11 @@ public class MapDeserializer implements ObjectDeserializer {
         if (type == ConcurrentMap.class || type == ConcurrentHashMap.class) {
             return new ConcurrentHashMap();
         }
-        
+
         if (type == Map.class || type == HashMap.class) {
             return new HashMap();
         }
-        
+
         if (type == LinkedHashMap.class) {
             return new LinkedHashMap();
         }
@@ -356,14 +356,14 @@ public class MapDeserializer implements ObjectDeserializer {
         if (clazz.isInterface()) {
             throw new JSONException("unsupport type " + type);
         }
-        
+
         try {
-            return (Map<Object, Object>) clazz.newInstance();
+            return (Map<Object, Object>) clazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new JSONException("unsupport type " + type, e);
         }
     }
-    
+
 
     public int getFastMatchToken() {
         return JSONToken.LBRACE;
